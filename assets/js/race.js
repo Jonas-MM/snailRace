@@ -1,5 +1,6 @@
 
 var startknap = document.getElementById("startbutton");
+hentNoget();
 
 // alert("ds");
 startknap.addEventListener("click", start);
@@ -8,14 +9,19 @@ var snegl1 = {
     navn: "Snegl 1",
     foto: "./assets/images/snegl1.png",
     x: -160,
-    y: -40
+    y: -40,
+    title: "John John",
+    AntalVinder: 0
 };
 var snegl2 = {
     id: "b",
     navn: "Snegl 2",
+
     foto: "./assets/images/snegl2.png",
     x: -160,
-    y: 40
+    y: 60,
+    title: "Jon Snow´s lillebror",
+    AntalVinder: 0
 };
 
 var snegl3 = {
@@ -23,7 +29,10 @@ var snegl3 = {
     navn: "Snegl 3",
     foto: "./assets/images/snegl3.png",
     x: -160,
-    y: 120
+    y: 160,
+    title: "Jon Snow",
+    AntalVinder: 0
+    
 };
 
 var snegl4 = {
@@ -31,14 +40,16 @@ var snegl4 = {
     navn: "Snegl 4",
     foto: "./assets/images/snegl4.png",
     x: -160,
-    y: 200
+    y: 260,
+    title: "Jon Snow´s storebror",
+    AntalVinder: 0
 };
 
 var sek = 0;
-var minSpring = 5;
-var maxSpring = 20;
+var minSpring = 2;
+var maxSpring = 25;
 var tidsinterval = 100;
-var finishLine = 730;
+var finishLine = 770;
 
 window.onload = function () {
     var racetrack = document.getElementById("raceway");
@@ -54,6 +65,9 @@ window.onload = function () {
     s1.style.zIndex = "1000";
     racetrack.appendChild(s1);
     s1.style.backgroundImage = 'url('+snegl1.foto+')';
+    s1.title = "John John";
+    s1.AntalVinder = 0;
+    
 
 
 
@@ -66,6 +80,8 @@ window.onload = function () {
     s2.style.top = snegl2.y + "px";
     s2.style.left = snegl2.x + "px";
     racetrack.appendChild(s2);
+    s2.title = "Jon Snow";
+    s2.AntalVinder = 0;
 
 
     //snegl 3
@@ -77,6 +93,8 @@ window.onload = function () {
     s3.style.top = snegl3.y + "px";
     s3.style.left = snegl3.x + "px";
     racetrack.appendChild(s3);
+    s3.title = "Jon Snow´s lillebror";
+    s3.AntalVinder = 0;
 
 
     //snegl 4
@@ -88,6 +106,8 @@ window.onload = function () {
     s4.style.top = snegl4.y + "px";
     s4.style.left = snegl4.x + "px";
     racetrack.appendChild(s4);
+    s4.title = "Jon Snow´s storebror";
+    s4.AntalVinder = 0;
 }
 
 
@@ -97,10 +117,14 @@ function start() {
     startknap.style.display = "none";
     // alert("dsa");
     afsted();
+    
 };
 
 function afsted() {
-
+    // console.log(snegl1.x);
+    // console.log(snegl2.x);
+    // console.log(snegl3.x);
+    // console.log(snegl4.x);
     snegl1.x += spring();
     snegl2.x += spring();
     snegl3.x += spring();
@@ -113,27 +137,31 @@ function afsted() {
 
     if (snegl1.x >= finishLine || snegl2.x >= finishLine || snegl3.x >= finishLine || snegl4.x >= finishLine) {
 
-        if (snegl1.x > snegl2.x) {
-            setTimeout("winner('" + snegl1.navn + "');", 1000);
+        if ((snegl1.x > snegl2.x) && (snegl1.x > snegl3.x) && (snegl1.x > snegl4.x))  {
+            setTimeout("winner('" + snegl1.title + "');", 1000);
+            return snegl1.AntalVinder += 1; 
         } 
         
-        
-        else if (snegl2.x > snegl1.x) {
-            setTimeout("winner('" + snegl2.navn + "');", 1000);
+        else if ((snegl2.x > snegl1.x) && (snegl2.x > snegl3.x) && (snegl2.x > snegl4.x)) {
+            setTimeout("winner('" + snegl2.title + "');", 1000);
+            return snegl2.AntalVinder += 1;
         } 
-        else if (snegl3.x > snegl4.x) {
-            setTimeout("winner('" + snegl3.navn +  "');", 1000);
-        } else if (snegl4.x > snegl1.x) {
-            setTimeout("winner('" + snegl4.navn + "');", 1000);
+        else if ((snegl3.x > snegl1.x) && (snegl3.x > snegl2.x) && (snegl3.x > snegl4.x)) {
+            setTimeout("winner('" + snegl3.title +  "');", 1000);
+            return snegl3.AntalVinder += 1;   
+        } 
+        else if ((snegl4.x > snegl3.x) && (snegl4.x > snegl2.x) && (snegl4.x > snegl1.x)) {
+            setTimeout("winner('" + snegl4.title + "');", 1000);
+            return snegl4.AntalVinder += 1;   
         } 
         else {
             setTimeout("winner('');", 1000);
         }
+     
     } else {
         setTimeout("afsted();", tidsinterval);
         sek = sek + 1;
     }
-
 };
 
 
@@ -143,13 +171,28 @@ function winner(vinderen) {
     if (vinderen == "") {
         alert("slut")
     } else {
-        alert( vinderen + " vandt spillet " + "det tog " + tid + " sekunder.")
+        console.log( vinderen + " vandt spillet " + "det tog " + tid + " sekunder.")
     }
-
-    window.location.reload();
+    localStorage.setItem("tid", tid);
+    localStorage.setItem("LocalVinder", vinderen);
+    localStorage.setItem("Antal", snegl1.AntalVinder);
+    hentNoget();
 };
 
 function spring() {
     var randomStep = Math.round(Math.random() * maxSpring) + maxSpring;
     return randomStep;
 }
+
+
+//Session storage*******************************************************************
+
+function hentNoget() {
+    // Local storage
+        document.querySelector("#firstTid").innerText = localStorage.getItem("tid");
+        document.querySelector("#first").innerText = localStorage.getItem("LocalVinder");
+        document.querySelector("#Antal").innerText = localStorage.getItem("Antal");
+
+    
+  }
+
